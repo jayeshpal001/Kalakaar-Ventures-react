@@ -5,7 +5,8 @@ const connectDB = require("./config/db");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const { errorHandler } = require("./middleware/errorMiddleware");
 const authRoutes = require("./routes/authRoutes");
-// const { errorHandler } = require("./middlewares/errorMiddleware");
+const uploadRoutes = require("./routes/uploadRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ app.use(express.json());
 // API Routes
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/contact", contactRoutes);
 
 // Custom Error Handler Middleware
 app.use(errorHandler);

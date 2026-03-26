@@ -1,12 +1,26 @@
 const express = require("express");
-const { getProjects, addProject } = require("../controllers/portfolioController");
+const { 
+  getProjects, 
+  addProject, 
+  updateProject, 
+  deleteProject,
+  reorderProjects // Add this import
+} = require("../controllers/portfolioController");
 const { protect } = require("../middleware/authMiddleware");
-// const { protect } = require("../middlewares/authMiddleware"); // Import the bouncer
 
 const router = express.Router();
 
+// The new reorder route MUST go above the /:id route, otherwise Express gets confused
+router.put("/reorder", protect, reorderProjects);
+
+// Base route: /api/portfolio
 router.route("/")
-  .get(getProjects) // Public
-  .post(protect, addProject); // Locked down!
+  .get(getProjects)
+  .post(protect, addProject);
+
+// ID-specific route: /api/portfolio/:id
+router.route("/:id")
+  .put(protect, updateProject)
+  .delete(protect, deleteProject);
 
 module.exports = router;

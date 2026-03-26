@@ -6,6 +6,7 @@ const projectSchema = new mongoose.Schema({
   description: { type: String, required: true },
   image: { type: String, required: true }, 
   story: { type: String },
+  order: { type: Number, default: 0 }, // NEW: Determines display sequence
   createdAt: { type: Date, default: Date.now },
 });
 

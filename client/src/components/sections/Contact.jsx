@@ -1,7 +1,26 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail,  Send } from "lucide-react";
+import { Mail,  Send, CheckCircle } from "lucide-react";
+import { useSendMessageMutation } from "../../features/api/apiSlice";
 
 export default function Contact() {
+    const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+    const [sendMessage, { isLoading, isSuccess, isError }] = useSendMessageMutation();
+
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.id]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await sendMessage(formData).unwrap();
+            setFormData({ name: "", email: "", message: "" }); // Clear form on success
+        } catch (err) {
+            console.error("Message transmission failed:", err);
+        }
+    };
+
     return (
         <section id="contact" className="py-24 px-6 max-w-4xl mx-auto w-full">
             <motion.div
@@ -18,30 +37,49 @@ export default function Contact() {
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+                {/* THE ACTIVE FORM */}
                 <motion.form
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="flex flex-col gap-4"
+                    onSubmit={handleSubmit}
+                    className="flex flex-col gap-4 relative"
                 >
+                    {isSuccess ? (
+                        <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center rounded-xl z-10 border border-neutral-800">
+                            <CheckCircle className="text-green-500 w-12 h-12 mb-4" />
+                            <h3 className="text-xl font-bold text-foreground mb-2">Transmission Successful</h3>
+                            <p className="text-muted text-center text-sm px-6">Your message has been securely routed to Kalakaar Ventures. I will be in touch shortly.</p>
+                        </div>
+                    ) : null}
+
                     <div className="flex flex-col gap-1">
                         <label htmlFor="name" className="text-sm text-neutral-400 pl-1">Name</label>
-                        <input type="text" id="name" placeholder="How should I address you?" className="w-full bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-3 text-foreground placeholder:text-neutral-600 focus:outline-none focus:border-accent transition-colors" />
+                        <input required type="text" id="name" value={formData.name} onChange={handleChange} placeholder="How should I address you?" className="w-full bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-3 text-foreground placeholder:text-neutral-600 focus:outline-none focus:border-accent transition-colors" />
                     </div>
                     <div className="flex flex-col gap-1">
                         <label htmlFor="email" className="text-sm text-neutral-400 pl-1">Email</label>
-                        <input type="email" id="email" placeholder="your@email.com" className="w-full bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-3 text-foreground placeholder:text-neutral-600 focus:outline-none focus:border-accent transition-colors" />
+                        <input required type="email" id="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" className="w-full bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-3 text-foreground placeholder:text-neutral-600 focus:outline-none focus:border-accent transition-colors" />
                     </div>
                     <div className="flex flex-col gap-1">
                         <label htmlFor="message" className="text-sm text-neutral-400 pl-1">Project Details</label>
-                        <textarea id="message" rows={4} placeholder="Tell me about your vision..." className="w-full bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-3 text-foreground placeholder:text-neutral-600 focus:outline-none focus:border-accent transition-colors resize-none" />
+                        <textarea required id="message" value={formData.message} onChange={handleChange} rows={4} placeholder="Tell me about your vision..." className="w-full bg-neutral-900/50 border border-neutral-800 rounded-xl px-4 py-3 text-foreground placeholder:text-neutral-600 focus:outline-none focus:border-accent transition-colors resize-none" />
                     </div>
-                    <button type="button" className="mt-2 w-full flex items-center justify-center gap-2 bg-foreground text-background font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform duration-300">
-                        Send Message <Send className="w-4 h-4" />
+
+                    {isError && <p className="text-red-500 text-sm text-center mt-2">Transmission failed. Please try again later.</p>}
+
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="mt-2 w-full flex items-center justify-center gap-2 bg-foreground text-background font-semibold py-4 rounded-xl hover:scale-[1.02] transition-transform duration-300 disabled:opacity-50"
+                    >
+                        {isLoading ? "Transmitting..." : "Send Message"} <Send className="w-4 h-4" />
                     </button>
                 </motion.form>
 
+                {/* STATIC CONTACT INFO */}
                 <motion.div
                     initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
