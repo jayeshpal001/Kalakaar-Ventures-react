@@ -6,31 +6,17 @@ import Contact from "../components/sections/Contact";
 import Footer from "../components/layout/Footer";
 
 export default function Home() {
-  const { data: liveProjects = [], isLoading, isError, error } = useGetProjectsQuery();
-
-  if (isError) {
-    return (
-      <div className="h-screen flex flex-col items-center justify-center bg-background text-red-500">
-        <h1 className="text-2xl font-bold mb-2">System Failure</h1>
-        <p>{error?.data?.message || "Could not connect to the Express server."}</p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-background">
-        <h1 className="text-2xl font-bold text-accent animate-pulse">
-          Initializing Kalakaar Environment...
-        </h1>
-      </div>
-    );
-  }
+  const { data: liveProjects = [], isLoading, isError } = useGetProjectsQuery();
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-between w-full">
+      {/* Hero loads instantly. No waiting. */}
       <Hero />
-      <Portfolio initialProjects={liveProjects} />
+      
+      {/* Pass the loading state to the Portfolio component */}
+      <Portfolio initialProjects={liveProjects} isLoading={isLoading} isError={isError} />
+      
+      {/* These load instantly too */}
       <Services />
       <Contact />
       <Footer />
