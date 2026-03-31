@@ -5,10 +5,13 @@
 }
 
 body {
-  color: var(--foreground);
-  background-color: var(--background);
-  overflow-x: hidden;
-  scroll-behavior: smooth; 
+  background-image: url('/premium-bg1.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Keeps the background frozen while scrolling */
+  background-repeat: no-repeat;
+  background-color: #050505; /* Fallback color */
+  color: white;
 }
 
 ::-webkit-scrollbar {

@@ -16,7 +16,6 @@ const getYouTubeId = (url) => {
   return match ? match[1] : null;
 };
 
-// NEW: Added isLoading and isError props
 export default function Portfolio({ initialProjects = [], isLoading, isError }) {
   const [activeCategory, setActiveCategory] = useState("All");
 
@@ -43,10 +42,10 @@ export default function Portfolio({ initialProjects = [], isLoading, isError }) 
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 activeCategory === category 
-                  ? "bg-foreground text-background" 
-                  : "bg-neutral-900 text-muted hover:text-foreground"
+                  ? "bg-foreground text-background shadow-[0_0_15px_rgba(255,255,255,0.2)] scale-105" 
+                  : "bg-neutral-900/40 backdrop-blur-md border border-white/10 text-muted hover:text-foreground"
               }`}
             >
               {category}
@@ -57,19 +56,19 @@ export default function Portfolio({ initialProjects = [], isLoading, isError }) 
 
       <motion.div layout className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
         
-        {/* NEW: THE INTERNAL LOADING STATE */}
+        {/* THE INTERNAL LOADING STATE */}
         {isLoading && (
           <div className="col-span-1 md:col-span-2 py-24 flex flex-col items-center justify-center">
-            <div className="w-12 h-12 border-4 border-neutral-800 border-t-accent rounded-full animate-spin mb-6"></div>
+            <div className="w-12 h-12 border-4 border-neutral-800/50 border-t-accent rounded-full animate-spin mb-6 shadow-[0_0_15px_rgba(255,255,255,0.1)]"></div>
             <p className="text-accent font-semibold animate-pulse">Establishing secure link to Kalakaar Database...</p>
             <p className="text-muted text-sm mt-2">Server is waking up from hibernation. This takes a moment.</p>
           </div>
         )}
 
-        {/* NEW: THE ERROR STATE */}
+        {/* THE ERROR STATE */}
         {isError && (
           <div className="col-span-1 md:col-span-2 py-24 flex flex-col items-center justify-center text-red-500">
-             <p>Database connection failed. Please refresh the page.</p>
+             <p className="bg-red-950/30 backdrop-blur-md border border-red-500/30 px-6 py-4 rounded-xl">Database connection failed. Please refresh the page.</p>
           </div>
         )}
 
@@ -81,7 +80,7 @@ export default function Portfolio({ initialProjects = [], isLoading, isError }) 
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 className="col-span-1 md:col-span-2 py-12 text-center"
               >
-                <p className="text-muted text-lg">More projects dropping in this category soon.</p>
+                <p className="text-muted text-lg bg-neutral-900/40 backdrop-blur-md border border-white/10 py-8 rounded-xl">More projects dropping in this category soon.</p>
               </motion.div>
             )}
 
@@ -97,7 +96,8 @@ export default function Portfolio({ initialProjects = [], isLoading, isError }) 
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.4 }}
                   key={project._id} 
-                  className="group relative aspect-square md:aspect-video rounded-xl overflow-hidden bg-neutral-900 cursor-pointer"
+                  // GLASSMORPHISM APPLIED HERE
+                  className="group relative aspect-square md:aspect-video rounded-xl overflow-hidden bg-neutral-900/40 backdrop-blur-md border border-white/10 cursor-pointer shadow-2xl"
                 >
                   
                   {/* THE TRI-STATE MEDIA RENDERER */}
@@ -132,8 +132,8 @@ export default function Portfolio({ initialProjects = [], isLoading, isError }) 
                   {/* Overlay Text */}
                   <div className="absolute inset-0 p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
                     <span className="text-accent text-sm font-semibold mb-2">{project.category}</span>
-                    <h3 className="text-2xl font-bold text-foreground mb-1">{project.title}</h3>
-                    <p className="text-muted text-sm line-clamp-2">{project.description}</p>
+                    <h3 className="text-2xl font-bold text-foreground mb-1 drop-shadow-lg">{project.title}</h3>
+                    <p className="text-muted text-sm line-clamp-2 drop-shadow-lg">{project.description}</p>
                   </div>
                 </motion.div>
               );

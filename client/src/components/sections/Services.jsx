@@ -4,11 +4,11 @@ import { servicesData } from "../../data";
 
 const getIcon = (iconName) => {
   switch (iconName) {
-    case "video": return <Video className="w-8 h-8 text-foreground" />;
-    case "camera": return <Camera className="w-8 h-8 text-foreground" />;
-    case "pen": return <PenTool className="w-8 h-8 text-foreground" />;
-    case "smartphone": return <Smartphone className="w-8 h-8 text-foreground" />;
-    default: return <Video className="w-8 h-8 text-foreground" />;
+    case "video": return <Video className="w-8 h-8 text-white" />;
+    case "camera": return <Camera className="w-8 h-8 text-white" />;
+    case "pen": return <PenTool className="w-8 h-8 text-white" />;
+    case "smartphone": return <Smartphone className="w-8 h-8 text-white" />;
+    default: return <Video className="w-8 h-8 text-white" />;
   }
 };
 
@@ -22,8 +22,8 @@ export default function Services() {
         transition={{ duration: 0.6 }}
         className="mb-16"
       >
-        <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Creative Solutions</h2>
-        <p className="text-muted max-w-2xl text-lg">
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 drop-shadow-md text-white">Creative Solutions</h2>
+        <p className="text-neutral-300 max-w-2xl text-lg drop-shadow-md">
           Not just documenting the journey, but delivering value. Helping you visually express your ideas through evolving mastery.
         </p>
       </motion.div>
@@ -36,27 +36,28 @@ export default function Services() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
-            className="group relative p-8 rounded-2xl bg-neutral-900/50 border border-neutral-800 hover:bg-neutral-900 transition-colors duration-300"
+            // GLASSMORPHISM APPLIED TO SERVICE CARDS
+            className="group relative p-8 rounded-2xl bg-neutral-900/30 backdrop-blur-md border border-white/10 hover:bg-white/5 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-all duration-300"
           >
-            <div className="mb-6 inline-flex p-4 rounded-full bg-neutral-800/50 border border-neutral-700/50 group-hover:scale-110 transition-transform duration-300">
+            <div className="mb-6 inline-flex p-4 rounded-full bg-white/5 backdrop-blur-md border border-white/10 group-hover:scale-110 group-hover:bg-white/10 group-hover:shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all duration-300">
               {getIcon(service.iconName)}
             </div>
             
-            <h3 className="text-2xl font-bold text-foreground mb-3">{service.title}</h3>
-            <p className="text-muted mb-6">{service.description}</p>
+            <h3 className="text-2xl font-bold text-white mb-3 drop-shadow-sm">{service.title}</h3>
+            <p className="text-neutral-300 mb-6 leading-relaxed">{service.description}</p>
             
             <div className="space-y-3 mb-8">
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500 block mb-1">Style</span>
-                <span className="text-sm text-neutral-300">{service.style}</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 block mb-1">Style</span>
+                <span className="text-sm text-neutral-200">{service.style}</span>
               </div>
               <div>
-                <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500 block mb-1">Perfect For</span>
-                <span className="text-sm text-neutral-300">{service.target}</span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 block mb-1">Perfect For</span>
+                <span className="text-sm text-neutral-200">{service.target}</span>
               </div>
             </div>
 
-            <a href="#contact" className="inline-flex items-center gap-2 text-sm font-semibold text-foreground hover:text-accent transition-colors group/btn">
+            <a href="#contact" className="inline-flex items-center gap-2 text-sm font-bold text-white hover:text-accent transition-colors group/btn">
               Work with me 
               <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
             </a>
