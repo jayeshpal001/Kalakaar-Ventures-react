@@ -13,7 +13,20 @@ body {
   background-color: #050505; /* Fallback color */
   color: white;
 }
+/* KALAKAAR INFINITE MARQUEE ENGINE */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
 
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Pause the marquee when the user hovers over it */
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -26,4 +39,27 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #404040;
+}
+/* KALAKAAR SMOOTH SCROLL ENGINE (LENIS) */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* HIDE DEFAULT CURSOR ON DESKTOP FOR CUSTOM RING */
+@media (pointer: fine) {
+  body, a, button, input, select, textarea, .cursor-pointer {
+    cursor: none !important;
+  }
 }

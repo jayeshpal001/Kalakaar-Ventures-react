@@ -16,9 +16,11 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/vite": "^4.2.2",
     "framer-motion": "^12.38.0",
+    "lenis": "^1.3.21",
     "lucide-react": "^1.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-parallax-tilt": "^1.7.322",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.13.2",
     "tailwindcss": "^4.2.2"
