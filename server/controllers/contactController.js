@@ -1,4 +1,6 @@
 const sgMail = require("@sendgrid/mail");
+// NEW: Import your template generator
+const { generatePremiumContactEmail } = require("../utils/emailTemplates");
 
 // Set API Key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -15,32 +17,19 @@ const sendEmail = async (req, res, next) => {
       throw new Error("Please provide all fields: name, email, and message.");
     }
 
+    // Generate the HTML by calling your separated component
+    const premiumHTML = generatePremiumContactEmail(name, email, message);
+
     // email data
     const msg = {
-      to: process.env.RECEIVER_EMAIL, // where you want to receive emails
+      to: process.env.RECEIVER_EMAIL, 
       from: {
         name: "Kalakaar Ventures",
-        email: process.env.EMAIL_USER, // verified sender email in SendGrid
+        email: process.env.EMAIL_USER, 
       },
-      replyTo: email, // when you reply, it goes to client email
+      replyTo: email, 
       subject: `New Lead: Kalakaar Ventures - ${name}`,
-
-      html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-          <h2 style="color: #050505;">New Project Inquiry</h2>
-
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-
-          <hr style="border: 1px solid #eee; margin: 20px 0;" />
-
-          <p><strong>Message:</strong></p>
-
-          <p style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
-            ${message}
-          </p>
-        </div>
-      `,
+      html: premiumHTML, 
     };
 
     // send email
