@@ -15,13 +15,10 @@ const getYouTubeId = (url) => {
   return match ? match[1] : null;
 };
 
-// UPGRADED: Premium Play Icon with Pulse Effect
 const PlayIcon = () => (
   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
     <div className="relative flex items-center justify-center w-16 h-16 group-hover:scale-110 transition-transform duration-500">
-      {/* Background Pulse */}
       <div className="absolute inset-0 bg-white/20 rounded-full animate-ping opacity-75"></div>
-      {/* Main Glass Button */}
       <div className="relative w-14 h-14 bg-black/50 backdrop-blur-xl border border-white/30 rounded-full flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         <svg className="w-6 h-6 text-white ml-1 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
       </div>
@@ -32,10 +29,22 @@ const PlayIcon = () => (
 export default function Portfolio({ initialProjects = [], isLoading, isError }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedProject, setSelectedProject] = useState(null);
+  
+  // NAYA STATE: Dikhane wale projects ki limit set karna (e.g., default 8)
+  const [visibleCount, setVisibleCount] = useState(8);
 
   const filteredProjects = activeCategory === "All" 
     ? initialProjects 
     : initialProjects.filter(project => project.category === activeCategory);
+
+  // Sirf limited projects hi render karne ke liye slice ka use kiya hai
+  const displayedProjects = filteredProjects.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProjects.length;
+
+  // Jab category change ho, toh view limit wapas reset kar do
+  useEffect(() => {
+    setVisibleCount(8);
+  }, [activeCategory]);
 
   useEffect(() => {
     if (selectedProject) document.body.style.overflow = "hidden";
@@ -45,7 +54,7 @@ export default function Portfolio({ initialProjects = [], isLoading, isError }) 
   return (
     <section id="portfolio" className="py-24 px-6 max-w-[1400px] mx-auto w-full relative">
       
-      {/* Header */}
+      {/* Header Section */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.6 }}
         className="mb-14 flex flex-col md:flex-row md:items-end justify-between gap-8"
@@ -72,65 +81,74 @@ export default function Portfolio({ initialProjects = [], isLoading, isError }) 
         </div>
       </motion.div>
 
-      {/* --- REFINED MASONRY GRID --- */}
-      {/* INCREASED COLUMNS: 3 on normal laptops (lg), 4 on large screens (xl) */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 mt-8 space-y-6">
-        
-        {isLoading && (
-           <div className="w-full py-24 flex flex-col items-center justify-center col-span-full">
-             <div className="w-12 h-12 border-4 border-neutral-700 border-t-white rounded-full animate-spin mb-6"></div>
-             <p className="text-white font-semibold animate-pulse tracking-widest uppercase text-sm">Syncing Database...</p>
-           </div>
-        )}
+      {/* --- MASONRY GRID WRAPPER --- */}
+      <div className="relative">
+        <div className={`columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6 transition-all duration-700 ${hasMore ? 'pb-24' : ''}`}>
+          
+          {isLoading && (
+             <div className="w-full py-24 flex flex-col items-center justify-center col-span-full">
+               <div className="w-12 h-12 border-4 border-neutral-700 border-t-white rounded-full animate-spin mb-6"></div>
+               <p className="text-white font-semibold animate-pulse tracking-widest uppercase text-sm">Syncing Database...</p>
+             </div>
+          )}
 
-        {!isLoading && !isError && (
-          <AnimatePresence>
-            {filteredProjects.map((project, index) => {
-              const ytId = getYouTubeId(project.image);
-              const isVideo = isRawVideo(project.image);
-              const isMediaVideo = ytId || isVideo;
+          {!isLoading && !isError && (
+            <AnimatePresence mode="popLayout">
+              {displayedProjects.map((project, index) => {
+                const ytId = getYouTubeId(project.image);
+                const isVideo = isRawVideo(project.image);
+                const isMediaVideo = ytId || isVideo;
 
-              return (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 }} // Staggered entry animation
-                  key={project._id} 
-                  className="relative cursor-pointer break-inside-avoid" 
-                  onClick={() => setSelectedProject(project)} 
-                >
-                  <Tilt 
-                    tiltMaxAngleX={4} tiltMaxAngleY={4} glareEnable={true} glareMaxOpacity={0.15} glareColor="#ffffff" glarePosition="all" transitionSpeed={1500} scale={1.02}
-                    className="w-full rounded-2xl overflow-hidden bg-gradient-to-br from-neutral-800/40 to-neutral-900/40 backdrop-blur-xl border border-white/5 shadow-2xl group"
+                return (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4 }}
+                    key={project._id} 
+                    className="relative cursor-pointer break-inside-avoid" 
+                    onClick={() => setSelectedProject(project)} 
                   >
-                    <div className="relative w-full bg-black">
-                      
-                      {/* ADDED max-h-[450px] TO PREVENT GIANT VERTICAL IMAGES */}
-                      {ytId ? (
-                         <img src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`} alt={project.title} className="w-full h-auto max-h-[450px] object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
-                      ) : (
-                        <img src={project.image} alt={project.title} className="w-full h-auto max-h-[450px] object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
-                      )}
-
-                      {isMediaVideo && <PlayIcon />}
-
-                      {/* Info Overlay */}
-                      <div className="absolute inset-0 p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-black/95 via-black/60 to-transparent">
-                        <span className="text-white/70 text-xs font-bold uppercase tracking-[0.2em] mb-2">{project.category}</span>
-                        <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-xl leading-tight translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{project.title}</h3>
+                    <Tilt 
+                      tiltMaxAngleX={4} tiltMaxAngleY={4} glareEnable={true} glareMaxOpacity={0.15} glareColor="#ffffff" glarePosition="all" transitionSpeed={1500} scale={1.02}
+                      className="w-full rounded-2xl overflow-hidden bg-gradient-to-br from-neutral-800/40 to-neutral-900/40 backdrop-blur-xl border border-white/5 shadow-2xl group"
+                    >
+                      <div className="relative w-full bg-black">
+                        {ytId ? (
+                           <img src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`} alt={project.title} className="w-full h-auto max-h-[450px] object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
+                        ) : (
+                          <img src={project.image} alt={project.title} className="w-full h-auto max-h-[450px] object-cover transition-transform duration-1000 group-hover:scale-110 opacity-90 group-hover:opacity-100" />
+                        )}
+                        {isMediaVideo && <PlayIcon />}
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-t from-black/95 via-black/60 to-transparent">
+                          <span className="text-white/70 text-xs font-bold uppercase tracking-[0.2em] mb-2">{project.category}</span>
+                          <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-xl leading-tight translate-y-4 group-hover:translate-y-0 transition-transform duration-500">{project.title}</h3>
+                        </div>
                       </div>
-                    </div>
-                  </Tilt>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+                    </Tilt>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          )}
+        </div>
+
+        {/* --- THE "VIEW MORE" FADE EFFECT & BUTTON --- */}
+        {hasMore && !isLoading && !isError && (
+          <div className="absolute bottom-0 left-0 w-full pt-48 pb-8 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent flex justify-center items-end pointer-events-none">
+            <button 
+              onClick={() => setVisibleCount(prev => prev + 8)}
+              className="pointer-events-auto px-8 py-4 bg-white/10 hover:bg-white text-white hover:text-black border border-white/20 rounded-full font-semibold tracking-wide transition-all duration-300 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.8)] hover:scale-105 flex items-center gap-2"
+            >
+              Explore More 
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+          </div>
         )}
       </div>
 
-      {/* --- MODAL (POPUP) --- Kept same as previous update */}
+      {/* Modal - Remains unchanged */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
@@ -163,7 +181,6 @@ export default function Portfolio({ initialProjects = [], isLoading, isError }) 
                     <span className="inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-[0.2em] text-black bg-white rounded-full">{selectedProject.category}</span>
                     <h2 className="text-4xl font-extrabold text-white mb-6 leading-tight">{selectedProject.title}</h2>
                     <p className="text-neutral-400 text-lg leading-relaxed mb-8 font-light">{selectedProject.description || "Detailed narrative of the creative process, challenges faced, and the ultimate solution delivered."}</p>
-                    
                     <div className="h-px w-full bg-white/10 mb-8"></div>
                   </div>
                   <div className="mt-auto">
