@@ -16,7 +16,7 @@ export default function Navbar() {
                 {/* Premium Sleek Monogram Container */}
                 <div className="relative w-10 h-10 md:w-20 md:h-12 overflow-hidden">
                     <Image
-                        src="/kv-icon.png" // Aapka naya cropped logo
+                        src="/icon.png" // Aapka naya cropped logo
                         alt="KV Symbol"
                         fill
                         className="object-contain object-left invert opacity-90 group-hover:opacity-100 transition-opacity duration-300"
