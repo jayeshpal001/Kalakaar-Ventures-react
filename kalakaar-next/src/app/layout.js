@@ -5,6 +5,12 @@ import ClientWrapper from "@/components/layout/ClientWrapper";
 export const metadata = {
   title: "Kalakaar Ventures | Selected Work",
   description: "Proof of execution. A visual gallery of storytelling, growth, and evolving mastery.",
+ icons: {
+    // ?v=2 lagane se browser isko nayi file samjhega aur purani bhool jayega
+    icon: '/icon.png?v=2', 
+    shortcut: '/icon.png?v=2',
+    apple: '/kv.png?v=2',
+  },
 };
 
 export default function RootLayout({ children }) {

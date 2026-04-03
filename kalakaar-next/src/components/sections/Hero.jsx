@@ -1,5 +1,8 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export default function Hero() {
   const containerVariants = {
@@ -22,33 +25,40 @@ export default function Hero() {
   return (
     <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden px-6">
       
-      {/* Removed the solid radial gradient that was blocking the body texture. 
-        Replaced with a subtle translucent vignette so the text remains readable.
-      */}
+      {/* Background vignette for text/logo readability */}
       <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none"></div>
 
       <motion.div 
-        className="max-w-4xl text-center z-10"
+        className="max-w-4xl text-center z-10 w-full flex flex-col items-center"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        <motion.div variants={itemVariants} className="mb-4">
-          <span className="text-sm md:text-base tracking-widest uppercase text-accent font-semibold drop-shadow-md">
+        <motion.div variants={itemVariants} className="mb-6">
+          <span className="text-xs md:text-sm tracking-[0.3em] uppercase text-accent font-semibold drop-shadow-md">
             Documenting Growth. Delivering Value.
           </span>
         </motion.div>
 
-        <motion.h1 
+        {/* --- THE UPGRADED LOGO REVEAL --- */}
+        <motion.div 
           variants={itemVariants} 
-          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-6 text-white drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]"
+          className="relative w-64 h-32 md:w-[28rem] md:h-48 lg:w-[32rem] lg:h-56 mb-8"
         >
-          Kalakaar Ventures
-        </motion.h1>
+          {/* SR-ONLY tag ensures SEO and Screen Readers still read the H1 */}
+          <h1 className="sr-only">Kalakaar Ventures</h1>
+          <Image 
+            src="/logo.png" 
+            alt="Kalakaar Ventures Master Logo"
+            fill
+            className="object-contain invert brightness-200 drop-shadow-[0_0_25px_rgba(255,255,255,0.1)]"
+            priority
+          />
+        </motion.div>
 
         <motion.p 
           variants={itemVariants} 
-          className="text-lg md:text-xl text-neutral-300 max-w-2xl mx-auto mb-10 drop-shadow-lg"
+          className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto mb-10 drop-shadow-lg font-light"
         >
           A storytelling-driven creative ecosystem. We document the journey and help you visually express your ideas through design, video, and digital creativity.
         </motion.p>
@@ -59,8 +69,9 @@ export default function Hero() {
           </a>
           
           {/* GLASSMORPHISM APPLIED TO SECONDARY BUTTON */}
-          <a href="#services" className="flex items-center gap-2 px-8 py-4 rounded-full font-semibold bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 text-white">
-            Explore Services <ArrowRight size={18} />
+          <a href="#services" className="flex items-center gap-2 px-8 py-4 rounded-full font-semibold bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 text-white group">
+            Explore Services 
+            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
           </a>
         </motion.div>
       </motion.div>

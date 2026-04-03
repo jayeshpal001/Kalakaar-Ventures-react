@@ -7,6 +7,7 @@ import Portfolio from "../components/sections/Portfolio";
 import Services from "../components/sections/Services";
 import Contact from "../components/sections/Contact";
 import Footer from "../components/layout/Footer";
+import Navbar from "@/components/Navbar";
 
 export default function Home() {
   const { data: liveProjects = [], isLoading, isError } = useGetProjectsQuery();
@@ -14,7 +15,7 @@ export default function Home() {
   return (
     // Ensured bg-transparent is here so the texture shows through!
     <div className="flex min-h-screen flex-col items-center justify-between w-full bg-transparent">
-      
+      <Navbar/>
       <Hero />
       
       {/* INJECTED THE INFINITE MARQUEE HERE */}

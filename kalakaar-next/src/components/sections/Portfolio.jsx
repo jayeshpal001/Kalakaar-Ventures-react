@@ -76,6 +76,34 @@ export default function Portfolio() {
     else document.body.style.overflow = "auto";
   }, [selectedProject]);
 
+  const [showLoader, setShowLoader] = useState(true);
+
+useEffect(() => {
+  const timer = setTimeout(() => setShowLoader(false), 2000); // 2 seconds
+  return () => clearTimeout(timer);
+}, []);
+
+// Return block ke bilkul upar:
+if (showLoader) {
+  return (
+    <div className="fixed inset-0 z-[200] bg-[#0a0a0a] flex items-center justify-center">
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 1.1, opacity: 0 }}
+        transition={{ duration: 1, ease: "easeInOut" }}
+        className="relative w-48 h-48 animate-pulse"
+      >
+        <Image 
+           src="/logo.png" 
+           alt="Loading Kalakaar" 
+           fill 
+           className="object-contain invert opacity-80" 
+        />
+      </motion.div>
+    </div>
+  );
+}
   return (
     <section id="portfolio" className="py-24 px-6 max-w-[1400px] mx-auto w-full relative">
 
