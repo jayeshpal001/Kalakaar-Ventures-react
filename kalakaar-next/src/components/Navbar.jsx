@@ -26,9 +26,9 @@ export default function Navbar() {
             </div>
 
             {/* Optional: Add a subtle premium button or menu here */}
-            <button className="text-xs font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors">
+            <a href="#contact" className="text-xs font-bold tracking-widest uppercase text-white/70 hover:text-white transition-colors">
                 Let's Talk
-            </button>
+            </a>
         </motion.nav>
     );
 }
