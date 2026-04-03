@@ -18,7 +18,8 @@ export const apiSlice = createApi({
         },
     }),
 
-    tagTypes: ['Project'],
+    // UPGRADE: Added 'Category' and 'Service' for auto-refreshing
+    tagTypes: ['Project', 'Category', 'Service'],
 
     endpoints: (builder) => ({
 
@@ -98,6 +99,54 @@ export const apiSlice = createApi({
             }),
         }),
 
+        // ==========================================
+        // 🔥 NEW RTK UPGRADES: CATEGORIES & SERVICES
+        // ==========================================
+
+        getCategories: builder.query({
+            query: () => '/categories',
+            providesTags: ['Category'],
+        }),
+
+        addCategory: builder.mutation({
+            query: (newCategory) => ({
+                url: '/categories',
+                method: 'POST',
+                body: newCategory,
+            }),
+            invalidatesTags: ['Category'],
+        }),
+
+        deleteCategory: builder.mutation({
+            query: (id) => ({
+                url: `/categories/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Category'],
+        }),
+
+        getServices: builder.query({
+            query: () => '/services',
+            providesTags: ['Service'],
+        }),
+
+        addService: builder.mutation({
+            query: (newService) => ({
+                url: '/services',
+                method: 'POST',
+                body: newService,
+            }),
+            invalidatesTags: ['Service'],
+        }),
+
+        deleteService: builder.mutation({
+            query: (id) => ({
+                url: `/services/${id}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['Service'],
+        }),
+
     }),
 });
 
@@ -109,5 +158,12 @@ export const {
     useUploadMediaMutation,
     useLoginAdminMutation,
     useSendMessageMutation,
-    useReorderProjectsMutation
+    useReorderProjectsMutation,
+    // EXPORT NEW HOOKS
+    useGetCategoriesQuery,
+    useAddCategoryMutation,
+    useDeleteCategoryMutation,
+    useGetServicesQuery,
+    useAddServiceMutation,
+    useDeleteServiceMutation
 } = apiSlice;

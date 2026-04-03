@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Tilt from "react-parallax-tilt";
-import { categories } from "../../data"; 
-import { useGetProjectsQuery } from "../../features/api/apiSlice"; 
+// 🔥 UPGRADE: Fetch dynamic categories from RTK Query instead of local data
+import { useGetProjectsQuery, useGetCategoriesQuery } from "../../features/api/apiSlice"; 
 
 const isRawVideo = (url) => {
   if (!url) return false;
@@ -37,6 +37,12 @@ export default function Portfolio() {
   // NAYE STATES: Real Pagination ke liye
   const [page, setPage] = useState(1);
   const [accumulatedProjects, setAccumulatedProjects] = useState([]);
+
+  // 🔥 THE NEW FETCH: Getting Categories dynamically from Database
+  const { data: dbCategories = [] } = useGetCategoriesQuery();
+  
+  // Extracting names and adding "All" at the beginning for the filter bar
+  const dynamicCategories = ["All", ...dbCategories.map(cat => cat.name)];
 
   // API Call: Ab hum paramters bhej rahe hain
   const { data, isLoading, isFetching, isError } = useGetProjectsQuery({
@@ -78,32 +84,32 @@ export default function Portfolio() {
 
   const [showLoader, setShowLoader] = useState(true);
 
-useEffect(() => {
-  const timer = setTimeout(() => setShowLoader(false), 2000); // 2 seconds
-  return () => clearTimeout(timer);
-}, []);
+  useEffect(() => {
+    const timer = setTimeout(() => setShowLoader(false), 2000); // 2 seconds
+    return () => clearTimeout(timer);
+  }, []);
 
-// Return block ke bilkul upar:
-if (showLoader) {
-  return (
-    <div className="fixed inset-0 z-[200] bg-[#0a0a0a] flex items-center justify-center">
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 1.1, opacity: 0 }}
-        transition={{ duration: 1, ease: "easeInOut" }}
-        className="relative w-48 h-48 animate-pulse"
-      >
-        <Image 
-           src="/logo.png" 
-           alt="Loading Kalakaar" 
-           fill 
-           className="object-contain invert opacity-80" 
-        />
-      </motion.div>
-    </div>
-  );
-}
+  if (showLoader) {
+    return (
+      <div className="fixed inset-0 z-[200] bg-[#0a0a0a] flex items-center justify-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 1.1, opacity: 0 }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+          className="relative w-48 h-48 animate-pulse"
+        >
+          <Image 
+             src="/logo.png" 
+             alt="Loading Kalakaar" 
+             fill 
+             className="object-contain invert opacity-80" 
+          />
+        </motion.div>
+      </div>
+    );
+  }
+
   return (
     <section id="portfolio" className="py-24 px-6 max-w-[1400px] mx-auto w-full relative">
 
@@ -118,7 +124,8 @@ if (showLoader) {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {categories.map((category) => (
+          {/* 🔥 DYNAMIC RENDER: Mapping over our new database-driven array */}
+          {dynamicCategories.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
