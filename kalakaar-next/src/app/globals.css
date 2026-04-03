@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+:root {
+  --background: #050505;
+  --foreground: #ededed;
+}
+
+body {
+  background-image: url('/premium-bg1.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Keeps the background frozen while scrolling */
+  background-repeat: no-repeat;
+  background-color: #050505; /* Fallback color */
+  color: white;
+}
+/* KALAKAAR INFINITE MARQUEE ENGINE */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+/* Pause the marquee when the user hovers over it */
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
+/* KALAKAAR SMOOTH SCROLL ENGINE (LENIS) */
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* HIDE DEFAULT CURSOR ON DESKTOP FOR CUSTOM RING */
+/* @media (pointer: fine) {
+  body, a, button, input, select, textarea, .cursor-pointer {
+    cursor: none !important;
+  }
+} */
