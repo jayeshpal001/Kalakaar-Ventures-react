@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation"; // Router for Logout
 import {
   useGetProjectsQuery,
   useAddProjectMutation,
@@ -9,9 +10,9 @@ import {
   useDeleteProjectMutation,
   useUploadMediaMutation,
   useReorderProjectsMutation,
-  useGetCategoriesQuery // 🔥 NEW: RTK Query for Dropdown
+  useGetCategoriesQuery
 } from "../../features/api/apiSlice";
-import { Trash2, Edit3, X, UploadCloud, GripVertical, LayoutGrid, Tags, Briefcase } from "lucide-react";
+import { Trash2, Edit3, X, UploadCloud, GripVertical, LayoutGrid, Tags, Briefcase, LogOut } from "lucide-react";
 
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
@@ -20,66 +21,47 @@ import { CSS } from '@dnd-kit/utilities';
 // Import Components
 import ManageCategories from "./ManageCategories";
 import ManageServices from "./ManageServices";
+import ProtectedRoute from "@/components/layout/ProtectedRoute";
 
-// --- SORTABLE CARD COMPONENT ---
+// ==========================================
+// 🛠️ SORTABLE PROJECT CARD COMPONENT
+// ==========================================
 function SortableProjectCard({ project, onEdit, onDelete }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: project._id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 50 : 1,
-    opacity: isDragging ? 0.9 : 1,
-  };
+  const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 50 : 1, opacity: isDragging ? 0.9 : 1 };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`flex flex-col sm:flex-row gap-4 p-4 rounded-xl backdrop-blur-md border items-start sm:items-center justify-between group relative transition-all ${isDragging
-          ? 'bg-neutral-800/60 border-accent shadow-[0_0_30px_rgba(255,255,255,0.1)] scale-[1.02]'
-          : 'bg-neutral-900/40 border-white/10 hover:bg-neutral-900/60'
-        }`}
-    >
+    <div ref={setNodeRef} style={style} className={`flex flex-col sm:flex-row gap-4 p-4 rounded-xl backdrop-blur-md border items-start sm:items-center justify-between group relative transition-all ${isDragging ? 'bg-neutral-800/60 border-accent shadow-[0_0_30px_rgba(255,255,255,0.1)] scale-[1.02]' : 'bg-neutral-900/40 border-white/10 hover:bg-neutral-900/60'}`}>
       <div className="flex items-center gap-4 w-full">
-        <div {...attributes} {...listeners} className="text-neutral-500 hover:text-white cursor-grab active:cursor-grabbing p-1 touch-none transition-colors">
-          <GripVertical size={20} />
-        </div>
+        <div {...attributes} {...listeners} className="text-neutral-500 hover:text-white cursor-grab active:cursor-grabbing p-1 touch-none transition-colors"><GripVertical size={20} /></div>
         <div className="flex flex-col">
           <span className="text-accent text-xs font-bold uppercase tracking-wider mb-1 drop-shadow-md">{project.category}</span>
           <h3 className="text-lg font-bold text-foreground line-clamp-1 drop-shadow-md">{project.title}</h3>
         </div>
       </div>
       <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0 pl-10 sm:pl-0">
-        <button onClick={() => onEdit(project)} className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-foreground rounded-lg transition-colors text-sm font-semibold">
-          <Edit3 size={16} /> Edit
-        </button>
-        <button onClick={() => onDelete(project._id)} className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors text-sm font-semibold">
-          <Trash2 size={16} /> Delete
-        </button>
+        <button onClick={() => onEdit(project)} className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-foreground rounded-lg transition-colors text-sm font-semibold"><Edit3 size={16} /> Edit</button>
+        <button onClick={() => onDelete(project._id)} className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors text-sm font-semibold"><Trash2 size={16} /> Delete</button>
       </div>
     </div>
   );
 }
 
-
-// --- MAIN COMMAND CENTER V2 ---
-export default function AdminDashboard() {
+// ==========================================
+// 🚀 THE ACTUAL COMMAND CENTER
+// ==========================================
+function AdminDashboard() {
+  const router = useRouter(); // Next.js Router for Logout
   const [activeTab, setActiveTab] = useState("projects");
-
   const tabs = [
     { id: "projects", label: "Portfolio Projects", icon: <LayoutGrid size={18} /> },
     { id: "categories", label: "Categories", icon: <Tags size={18} /> },
     { id: "services", label: "Services", icon: <Briefcase size={18} /> },
   ];
 
-  // --- RTK QUERY HOOKS ---
   const { data = {}, isLoading: isFetchingData } = useGetProjectsQuery({ limit: 1000 });
   const projects = data.projects || [];
-  
-  // 🔥 THE UPGRADE: 1 line instead of 15 lines of useEffect/fetch
   const { data: dbCategories = [] } = useGetCategoriesQuery();
-
   const [addProject, { isLoading: isAdding }] = useAddProjectMutation();
   const [updateProject, { isLoading: isUpdating }] = useUpdateProjectMutation();
   const [deleteProject] = useDeleteProjectMutation();
@@ -90,31 +72,19 @@ export default function AdminDashboard() {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ title: "", category: "", description: "", image: "", story: "" });
 
-  useEffect(() => {
-    setLocalProjects(projects);
-  }, [projects]);
+  useEffect(() => setLocalProjects(projects), [projects]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
+  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }));
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       const oldIndex = localProjects.findIndex((p) => p._id === active.id);
       const newIndex = localProjects.findIndex((p) => p._id === over.id);
-
       const newArray = arrayMove(localProjects, oldIndex, newIndex);
       setLocalProjects(newArray);
-
       const payload = newArray.map((p, index) => ({ _id: p._id, order: index }));
-
-      try {
-        await reorderProjects(payload).unwrap();
-      } catch (err) {
-        console.error("Failed to sync sequence with server:", err);
-      }
+      try { await reorderProjects(payload).unwrap(); } catch (err) { console.error("Failed to sync sequence with server:", err); }
     }
   };
 
@@ -128,9 +98,7 @@ export default function AdminDashboard() {
     try {
       const response = await uploadMedia(uploadData).unwrap();
       if (response.success) setFormData((prev) => ({ ...prev, image: response.url }));
-    } catch (err) {
-      alert("Media upload failed. Check connection and file size.");
-    }
+    } catch (err) { alert("Media upload failed. Check connection and file size."); }
   };
 
   const handleEditClick = (project) => {
@@ -161,54 +129,42 @@ export default function AdminDashboard() {
     setFormData({ title: "", category: "", description: "", image: "", story: "" });
   };
 
+  // 🔥 LOGOUT LOGIC MOVED HERE
+  const handleLogout = () => {
+    localStorage.removeItem("kalakaar_token");
+    router.push("/login"); // Immediately transport back to login
+  };
+
   const inputStyles = "w-full bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-3 text-foreground focus:outline-none focus:border-accent transition-all shadow-inner";
 
   return (
     <div className="min-h-screen pt-24 pb-24 px-6 max-w-7xl mx-auto w-full">
-
-      {/* COMMAND CENTER HEADER & TABS */}
-      <div className="mb-10">
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2 drop-shadow-md">
-          Command Center <span className="text-neutral-600">V2</span>
-        </h1>
-        <p className="text-neutral-400 font-mono text-sm tracking-widest uppercase">
-          Kalakaar Ventures • Active Database Link
-        </p>
+      <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2 drop-shadow-md">Command Center <span className="text-neutral-600">V2</span></h1>
+          <p className="text-neutral-400 font-mono text-sm tracking-widest uppercase">Kalakaar Ventures • Active Database Link</p>
+        </div>
+        
+        {/* LOGOUT BUTTON */}
+        <button onClick={handleLogout} className="flex items-center gap-2 px-6 py-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all font-bold text-sm tracking-widest uppercase shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+          <LogOut size={16} /> Disconnect
+        </button>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-8 border-b border-white/10 pb-4">
         {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${activeTab === tab.id
-                ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]"
-                : "bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white"
-              }`}
-          >
-            {tab.icon}
-            {tab.label}
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold transition-all duration-300 ${activeTab === tab.id ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]" : "bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white"}`}>
+            {tab.icon} {tab.label}
           </button>
         ))}
       </div>
 
-      {/* DYNAMIC TAB CONTENT */}
       <div className="relative">
         <AnimatePresence mode="wait">
-
-          {/* TAB 1: PROJECTS */}
           {activeTab === "projects" && (
-            <motion.div
-              key="projects"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-12"
-            >
-              {/* UPLOAD/EDIT FORM */}
+            <motion.div key="projects" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div>
-                <p className="text-muted mb-6 drop-shadow-md">{editingId ? "Update existing project parameters." : "Upload new projects to the Kalakaar Ventures portfolio."}</p>
+                <p className="text-muted mb-6 drop-shadow-md">{editingId ? "Update existing project parameters." : "Upload new projects to the portfolio."}</p>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6 bg-neutral-900/40 backdrop-blur-md p-8 rounded-2xl border border-white/10 sticky top-24 shadow-2xl">
                   {editingId && (
                     <div className="flex justify-between items-center bg-accent/20 backdrop-blur-md border border-accent/30 p-4 rounded-lg mb-2">
@@ -216,91 +172,38 @@ export default function AdminDashboard() {
                       <button type="button" onClick={cancelEdit} className="text-muted hover:text-white transition-colors"><X size={20} /></button>
                     </div>
                   )}
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm text-neutral-400">Project Title</label>
-                    <input required type="text" name="title" value={formData.title} onChange={handleChange} className={inputStyles} />
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm text-neutral-400">Category (Dynamic)</label>
-                    <select required name="category" value={formData.category} onChange={handleChange} className={`${inputStyles} appearance-none [&>option]:bg-neutral-900`}>
-                      <option value="" disabled>Select Category</option>
-                      {/* Using the RTK Query dbCategories here */}
-                      {dbCategories.map(cat => <option key={cat._id} value={cat.name}>{cat.name}</option>)}
-                    </select>
-                  </div>
-
-                  <div className="flex flex-col gap-2 p-4 border border-dashed border-white/20 rounded-xl bg-white/5 backdrop-blur-sm">
-                    <label className="text-sm text-neutral-400 flex items-center gap-2"><UploadCloud size={16} /> Direct Cloud Upload</label>
-                    <input type="file" accept="image/*,video/mp4,video/webm" onChange={handleFileUpload} disabled={isUploading} className="w-full text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-all cursor-pointer disabled:opacity-50" />
-                    {isUploading && <p className="text-accent text-xs mt-1 animate-pulse drop-shadow-md">Uploading to secure cloud vault...</p>}
-
-                    <div className="flex items-center gap-4 my-2">
-                      <div className="h-px bg-white/10 flex-1"></div>
-                      <span className="text-xs text-neutral-500 font-semibold uppercase tracking-widest">OR PASTE LINK</span>
-                      <div className="h-px bg-white/10 flex-1"></div>
-                    </div>
-
-                    <input required type="text" name="image" placeholder="YouTube or direct media URL..." value={formData.image} onChange={handleChange} className={`${inputStyles} text-sm`} />
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm text-neutral-400">Short Description</label>
-                    <input required type="text" name="description" value={formData.description} onChange={handleChange} className={inputStyles} />
-                  </div>
-
-                  <button type="submit" disabled={isAdding || isUpdating || isUploading} className={`mt-4 w-full text-background font-semibold py-4 rounded-xl hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 shadow-lg ${editingId ? 'bg-accent text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-foreground'}`}>
-                    {isAdding || isUpdating ? "Deploying..." : editingId ? "Save Modifications" : "Deploy to Portfolio"}
-                  </button>
+                  <div className="flex flex-col gap-2"><label className="text-sm text-neutral-400">Project Title</label><input required type="text" name="title" value={formData.title} onChange={handleChange} className={inputStyles} /></div>
+                  <div className="flex flex-col gap-2"><label className="text-sm text-neutral-400">Category (Dynamic)</label><select required name="category" value={formData.category} onChange={handleChange} className={`${inputStyles} appearance-none [&>option]:bg-neutral-900`}><option value="" disabled>Select Category</option>{dbCategories.map(cat => <option key={cat._id} value={cat.name}>{cat.name}</option>)}</select></div>
+                  <div className="flex flex-col gap-2 p-4 border border-dashed border-white/20 rounded-xl bg-white/5 backdrop-blur-sm"><label className="text-sm text-neutral-400 flex items-center gap-2"><UploadCloud size={16} /> Direct Cloud Upload</label><input type="file" accept="image/*,video/mp4,video/webm" onChange={handleFileUpload} disabled={isUploading} className="w-full text-sm text-neutral-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20 transition-all cursor-pointer disabled:opacity-50" />{isUploading && <p className="text-accent text-xs mt-1 animate-pulse drop-shadow-md">Uploading to secure cloud vault...</p>}<div className="flex items-center gap-4 my-2"><div className="h-px bg-white/10 flex-1"></div><span className="text-xs text-neutral-500 font-semibold uppercase tracking-widest">OR PASTE LINK</span><div className="h-px bg-white/10 flex-1"></div></div><input required type="text" name="image" placeholder="YouTube or direct media URL..." value={formData.image} onChange={handleChange} className={`${inputStyles} text-sm`} /></div>
+                  <div className="flex flex-col gap-2"><label className="text-sm text-neutral-400">Short Description</label><input required type="text" name="description" value={formData.description} onChange={handleChange} className={inputStyles} /></div>
+                  <button type="submit" disabled={isAdding || isUpdating || isUploading} className={`mt-4 w-full text-background font-semibold py-4 rounded-xl hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 shadow-lg ${editingId ? 'bg-accent text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-foreground'}`}>{isAdding || isUpdating ? "Deploying..." : editingId ? "Save Modifications" : "Deploy to Portfolio"}</button>
                 </form>
               </div>
-
-              {/* DRAG AND DROP INVENTORY */}
               <div>
                 <h2 className="text-2xl font-bold mb-6 drop-shadow-md">Active Database Sequence</h2>
                 <div className="flex flex-col gap-4">
-                  {isFetchingData && (
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <div className="w-8 h-8 border-2 border-neutral-700 border-t-accent rounded-full animate-spin mb-4"></div>
-                      <span className="text-sm text-neutral-500 animate-pulse tracking-widest uppercase">Fetching Sequence...</span>
-                    </div>
-                  )}
-
-                  {!isFetchingData && (
-                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                      <SortableContext items={localProjects.map(p => p._id)} strategy={verticalListSortingStrategy}>
-                        {localProjects.map((project) => (
-                          <SortableProjectCard key={project._id} project={project} onEdit={handleEditClick} onDelete={handleDelete} />
-                        ))}
-                      </SortableContext>
-                    </DndContext>
-                  )}
-
-                  {!isFetchingData && localProjects.length === 0 && (
-                    <p className="text-muted text-center py-12 border border-dashed border-white/10 rounded-xl bg-neutral-900/30 backdrop-blur-md">Database is empty.</p>
-                  )}
+                  {isFetchingData && <div className="flex flex-col items-center justify-center py-12"><div className="w-8 h-8 border-2 border-neutral-700 border-t-accent rounded-full animate-spin mb-4"></div><span className="text-sm text-neutral-500 animate-pulse tracking-widest uppercase">Fetching Sequence...</span></div>}
+                  {!isFetchingData && <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}><SortableContext items={localProjects.map(p => p._id)} strategy={verticalListSortingStrategy}>{localProjects.map((project) => (<SortableProjectCard key={project._id} project={project} onEdit={handleEditClick} onDelete={handleDelete} />))}</SortableContext></DndContext>}
+                  {!isFetchingData && localProjects.length === 0 && <p className="text-muted text-center py-12 border border-dashed border-white/10 rounded-xl bg-neutral-900/30 backdrop-blur-md">Database is empty.</p>}
                 </div>
               </div>
             </motion.div>
           )}
-
-          {/* TAB 2: CATEGORIES */}
-          {activeTab === "categories" && (
-            <motion.div key="categories" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
-              <ManageCategories />
-            </motion.div>
-          )}
-
-          {/* TAB 3: SERVICES */}
-          {activeTab === "services" && (
-            <motion.div key="services" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
-              <ManageServices />
-            </motion.div>
-          )}
-
+          {activeTab === "categories" && <motion.div key="categories" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}><ManageCategories /></motion.div>}
+          {activeTab === "services" && <motion.div key="services" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}><ManageServices /></motion.div>}
         </AnimatePresence>
       </div>
     </div>
+  );
+}
+
+// ==========================================
+//  THE MASTER EXPORT (WRAPPED IN SECURITY)
+// ==========================================
+export default function AdminPage() {
+  return (
+    <ProtectedRoute>
+      <AdminDashboard />
+    </ProtectedRoute>
   );
 }

@@ -10,7 +10,6 @@ const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// The new reorder route MUST go above the /:id route, otherwise Express gets confused
 router.put("/reorder", protect, reorderProjects);
 
 // Base route: /api/portfolio

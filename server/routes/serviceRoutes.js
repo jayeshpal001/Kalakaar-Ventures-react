@@ -4,7 +4,7 @@ const { getServices, createService, deleteService } = require('../controllers/se
 const { protect } = require('../middleware/authMiddleware');
 
 router.get('/', getServices);
-router.post('/',protect, createService); // Add Admin Auth middleware here if needed
-router.delete('/:id', deleteService);
+router.post('/',protect, createService);    
+router.delete('/:id',protect, deleteService);
 
 module.exports = router;
