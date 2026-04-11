@@ -54,7 +54,7 @@ export default function Navbar() {
                             <div className="absolute top-1/2 left-4 md:left-6 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white/40 blur-[15px] group-hover:bg-white/60 group-hover:blur-[25px] transition-all duration-500 rounded-full z-0"></div>
 
                             <Image
-                                src="/kv-icon.png" // Aapka logo
+                                src="/kv-icon.png " // Aapka logo
                                 alt="KV Symbol"
                                 fill
                                 // Enhanced glowing classes: brightness-200 and stronger drop-shadow
