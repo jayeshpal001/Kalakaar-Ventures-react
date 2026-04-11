@@ -4,7 +4,7 @@ import { useGetServicesQuery } from "../../features/api/apiSlice";
 import { motion } from "framer-motion";
 import { Video, Camera, PenTool, Smartphone, ArrowRight, Briefcase, Monitor, Code, Sparkles, Target } from "lucide-react";
 
-// 🧠 THE SMART ICON ENGINE
+// THE SMART ICON ENGINE
 const getSmartIcon = (title) => {
   if (!title) return <Briefcase className="w-8 h-8 text-white" />;
   const t = title.toLowerCase();
@@ -21,7 +21,7 @@ const getSmartIcon = (title) => {
   return <Briefcase className="w-8 h-8 text-white" />;
 };
 
-// 🧠 THE SMART DATA PARSER
+//  THE SMART DATA PARSER
 const parseServiceData = (rawDescription) => {
   if (!rawDescription) return { main: "", style: "", target: "" };
   
@@ -48,24 +48,25 @@ export default function Services() {
       <div className="absolute top-40 left-10 w-72 h-72 bg-white/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-neutral-800/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
 
+      {/* UPGRADED HEADER: Centered and Balanced */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 0.6 }}
-        className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8"
+        className="mb-20 flex flex-col items-center text-center justify-center gap-4"
       >
-        <div className="max-w-3xl">
-          <h2 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-white drop-shadow-lg">
+        <div className="max-w-3xl flex flex-col items-center">
+          <h2 className="text-5xl md:text-6xl font-black tracking-tight mb-4 text-white drop-shadow-lg">
             Creative <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-400 to-white">Solutions.</span>
           </h2>
-          <p className="text-neutral-400 text-lg md:text-xl leading-relaxed">
+          <p className="text-neutral-400 text-lg md:text-xl leading-relaxed max-w-2xl">
             Not just documenting the journey, but delivering value. Helping you visually express your ideas through evolving mastery and scalable architectures.
           </p>
         </div>
       </motion.div>
 
-      {/* 🔥 UPGRADED GRID: 1 -> 2 -> 3 -> 4 Columns based on screen size */}
+      {/* THE 4-COLUMN GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
         
         {/* LOADING STATE */}
