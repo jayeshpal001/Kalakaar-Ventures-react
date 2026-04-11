@@ -51,8 +51,10 @@ export default function Hero3D() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-white/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
 
       <Canvas 
-        camera={{ position: [0, 0, 6], fov: 45 }} // Camera pulled back slightly
-        dpr={[1, 2]} // 🔥 UPGRADE: Pixel perfect rendering on Retina/4K displays
+        camera={{ position: [0, 0, 6], fov: 45 }} 
+        dpr={[1, 1.5]} 
+        gl={{ powerPreference: "high-performance", alpha: true, antialias: false }} 
+        resize={{ scroll: false }} 
         className="w-full h-full z-10"
       >
         {/* Enhanced Cinematic Lighting */}
