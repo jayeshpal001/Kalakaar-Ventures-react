@@ -21,14 +21,13 @@ const getSmartIcon = (title) => {
   return <Briefcase className="w-8 h-8 text-white" />;
 };
 
-// 🧠 THE SMART DATA PARSER: Splits the single description string into logical UI parts
+// 🧠 THE SMART DATA PARSER
 const parseServiceData = (rawDescription) => {
   if (!rawDescription) return { main: "", style: "", target: "" };
   
   const parts = rawDescription.split('|').map(s => s.trim());
   const main = parts[0] || "";
   
-  // Extracting Style and Target if they exist in the string
   const stylePart = parts.find(p => p.toLowerCase().startsWith('style:')) || "";
   const targetPart = parts.find(p => p.toLowerCase().startsWith('perfect for:')) || "";
 
@@ -43,7 +42,7 @@ export default function Services() {
   const { data: services = [], isLoading, isError } = useGetServicesQuery();
 
   return (
-    <section id="services" className="py-32 px-6 max-w-[1400px] mx-auto w-full relative">
+    <section id="services" className="py-32 px-6 max-w-[1600px] mx-auto w-full relative">
       
       {/* Background Subtle Glows */}
       <div className="absolute top-40 left-10 w-72 h-72 bg-white/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
@@ -66,7 +65,8 @@ export default function Services() {
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      {/* 🔥 UPGRADED GRID: 1 -> 2 -> 3 -> 4 Columns based on screen size */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
         
         {/* LOADING STATE */}
         {isLoading && (
@@ -98,24 +98,24 @@ export default function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="group relative p-8 md:p-10 rounded-[2rem] bg-gradient-to-b from-neutral-900/40 to-black border border-white/5 hover:border-white/20 transition-all duration-500 flex flex-col h-full overflow-hidden"
+              className="group relative p-8 rounded-[2rem] bg-gradient-to-b from-neutral-900/40 to-black border border-white/5 hover:border-white/20 transition-all duration-500 flex flex-col h-full overflow-hidden"
             >
               {/* Subtle Hover Gradient Spotlight inside card */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
 
               {/* Icon Container */}
-              <div className="relative z-10 mb-8 inline-flex p-5 rounded-2xl bg-black border border-white/10 group-hover:scale-110 group-hover:border-white/30 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-500 self-start">
+              <div className="relative z-10 mb-6 inline-flex p-4 rounded-2xl bg-black border border-white/10 group-hover:scale-110 group-hover:border-white/30 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-all duration-500 self-start">
                 {getSmartIcon(service.title)}
               </div>
               
-              <h3 className="relative z-10 text-2xl md:text-3xl font-bold text-white mb-4 tracking-tight">{service.title}</h3>
+              <h3 className="relative z-10 text-xl md:text-2xl font-bold text-white mb-3 tracking-tight">{service.title}</h3>
               
-              <p className="relative z-10 text-neutral-400 mb-8 leading-relaxed text-sm md:text-base flex-grow">
+              <p className="relative z-10 text-neutral-400 mb-6 leading-relaxed text-sm flex-grow">
                 {main}
               </p>
 
-              {/* DYNAMIC BADGES (Extracted via Smart Parser) */}
-              <div className="relative z-10 flex flex-col gap-3 mb-10">
+              {/* DYNAMIC BADGES */}
+              <div className="relative z-10 flex flex-col gap-3 mb-8">
                 {style && (
                   <div className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
                     <Sparkles className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />

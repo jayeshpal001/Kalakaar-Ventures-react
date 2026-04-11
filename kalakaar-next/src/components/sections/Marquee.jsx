@@ -19,12 +19,12 @@ export default function Marquee() {
   const coreSkills = [...rawSkills, ...rawSkills, ...rawSkills, ...rawSkills, ...rawSkills];
 
   return (
-    // Skew and scale added for that Edgy, Modern Agency look
-    <div className="relative w-full bg-[#050505] border-y border-white/10 py-8 md:py-12 overflow-hidden flex z-10 -rotate-2 scale-[1.02] shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+    // 🔥 HEIGHT REDUCED: py-8 md:py-12 changed to py-4 md:py-5 for a sleeker ribbon look
+    <div className="relative w-full bg-[#050505] border-y border-white/10 py-4 md:py-5 overflow-hidden flex z-10 -rotate-2 scale-[1.02] shadow-[0_0_50px_rgba(0,0,0,0.8)]">
       
       {/* Shadow Gradients to fade the edges (Cinematic Effect) */}
-      <div className="absolute left-0 top-0 bottom-0 w-24 md:w-48 bg-gradient-to-r from-[#050505] to-transparent z-20 pointer-events-none"></div>
-      <div className="absolute right-0 top-0 bottom-0 w-24 md:w-48 bg-gradient-to-l from-[#050505] to-transparent z-20 pointer-events-none"></div>
+      <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#050505] to-transparent z-20 pointer-events-none"></div>
+      <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#050505] to-transparent z-20 pointer-events-none"></div>
 
       {/* The Moving Track (Added hover-pause utility) */}
       <div className="flex w-max animate-marquee hover:[animation-play-state:paused] items-center cursor-crosshair">
@@ -36,17 +36,18 @@ export default function Marquee() {
           return (
             <div key={index} className="flex items-center group">
               <span 
-                className={`text-5xl md:text-7xl font-black uppercase tracking-tighter px-6 md:px-10 transition-all duration-500 ${
+                // 🔥 TEXT SIZE REDUCED: text-5xl md:text-7xl changed to text-3xl md:text-5xl
+                className={`text-3xl md:text-5xl font-black uppercase tracking-tighter px-5 md:px-8 transition-all duration-500 ${
                   isHollow 
-                    ? "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.4)] md:[-webkit-text-stroke:2px_rgba(255,255,255,0.4)] group-hover:[-webkit-text-stroke:1px_#ffffff] md:group-hover:[-webkit-text-stroke:2px_#ffffff] group-hover:text-white/10" 
+                    ? "text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.4)] md:[-webkit-text-stroke:1.5px_rgba(255,255,255,0.4)] group-hover:[-webkit-text-stroke:1px_#ffffff] md:group-hover:[-webkit-text-stroke:1.5px_#ffffff] group-hover:text-white/10" 
                     : "text-white/80 group-hover:text-white group-hover:drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]"
                 }`}
               >
                 {text}
               </span>
               
-              {/* Spinning Premium Separator */}
-              <span className="text-white text-3xl md:text-4xl opacity-50 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-[spin_4s_linear_infinite]">
+              {/* Spinning Premium Separator (Scaled down to match new text size) */}
+              <span className="text-white text-xl md:text-2xl opacity-50 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] animate-[spin_4s_linear_infinite]">
                 ✦
               </span>
             </div>
