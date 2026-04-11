@@ -123,9 +123,8 @@ export default function Portfolio() {
         </div>
       </motion.div>
 
-      {/* --- 🔥 RESTORED AUTO-HEIGHT MASONRY GRID (Lag-Free) --- */}
+      {/* --- MASONRY GRID WRAPPER --- */}
       <div className="relative">
-        {/* Swapped back to columns logic */}
         <div className={`columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 md:gap-6 transition-all duration-700 ${hasMore ? 'pb-32' : ''}`}>
 
           {isLoading && page === 1 && (
@@ -151,33 +150,29 @@ export default function Portfolio() {
 
                 return (
                   <motion.div
-                    // ⚠️ Removed `layout` prop: This stops Framer from crashing mobile CPUs in Masonry Grids!
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} 
                     whileHover={{ y: -8, scale: 1.02 }}
                     key={project._id || index}
-                    // break-inside-avoid ensures cards don't split across columns
-                    className="relative cursor-pointer group rounded-2xl md:rounded-[2rem] overflow-hidden bg-neutral-900 border border-white/5 shadow-xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)] hover:border-white/20 transition-all duration-500 break-inside-avoid mb-4 md:mb-6"
+                    className="relative cursor-pointer group rounded-2xl md:rounded-[2rem] overflow-hidden bg-[#0a0a0a] border border-white/5 shadow-xl hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)] hover:border-white/20 transition-all duration-500 break-inside-avoid mb-4 md:mb-6"
                     onClick={() => setSelectedProject(project)}
                   >
-                    {/* Natural Aspect Ratio Wrapper */}
-                    <div className="relative w-full bg-[#0a0a0a] flex justify-center items-center overflow-hidden">
+                    <div className="relative w-full bg-[#050505] flex justify-center items-center overflow-hidden">
                       <Image
                         src={imgSrc}
                         alt={project.title}
                         width={600}
                         height={450}
-                        style={{ width: '100%', height: 'auto' }} // 🔥 Restored natural height auto-adjustment
                         unoptimized={imgSrc.includes("i4utravels.com") || imgSrc.includes("tripadvisor")} 
-                        className="transition-transform duration-1000 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                        // 🔥 THE MAGIC FIX: Fixed 260px & object-contain on Mobile | Auto-height & object-cover on Desktop
+                        className="w-full h-[260px] md:[height:auto] object-contain md:object-cover transition-transform duration-1000 group-hover:scale-110 opacity-80 group-hover:opacity-100"
                         priority={index < 4}
                       />
 
                       {isMediaVideo && <PlayIcon />}
 
-                      {/* Premium Gradient Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent opacity-0 group-hover:opacity-80 transition-opacity duration-500 pointer-events-none"></div>
 
                       <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500 pointer-events-none opacity-0 group-hover:opacity-100">
@@ -213,7 +208,7 @@ export default function Portfolio() {
         )}
       </div>
 
-      {/* --- 🔥 MODAL (Unchanged) --- */}
+      {/* --- MODAL --- */}
       <AnimatePresence>
         {selectedProject && (
           <motion.div
