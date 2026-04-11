@@ -26,8 +26,8 @@ export default function Marquee() {
       <div className="relative w-full bg-[#050505] border-y border-white/10 py-4 md:py-5 flex z-10 -rotate-2 scale-[1.05] shadow-[0_0_50px_rgba(0,0,0,0.8)]">
         
         {/* Shadow Gradients to fade the edges (Cinematic Effect) */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#050505] to-transparent z-20 pointer-events-none"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#050505] to-transparent z-20 pointer-events-none"></div>
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-linear-to-r from-[#050505] to-transparent z-20 pointer-events-none"></div>
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-linear-to-l from-[#050505] to-transparent z-20 pointer-events-none"></div>
 
         {/* The Moving Track (Added hover-pause utility) */}
         <div className="flex w-max animate-marquee hover:[animation-play-state:paused] items-center cursor-crosshair">
