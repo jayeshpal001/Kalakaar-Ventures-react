@@ -1,87 +1,107 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { 
-  Float, 
-  Environment, 
-  PresentationControls, 
-  Sparkles,
-  ContactShadows
+  Points, 
+  PointMaterial, 
+  Preload,
+  ContactShadows,
+  OrbitControls
 } from "@react-three/drei";
+import * as THREE from "three";
 
-// 🔥 THE ABSTRACT CORE OBJECT
-function LiquidMetalKnot() {
-  const meshRef = useRef();
+// 🔥 THE NEURAL CLOUD COMPONENT
+// A mesmerizing, stable point cloud that creates a digital universe vibe
+function NeuralCloud(props) {
+  const ref = useRef();
+  
+  // Create a sphere of 4000 points dynamically
+  const [positions, colors] = useMemo(() => {
+    const count = 4000;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    
+    for (let i = 0; i < count; i++) {
+      // Create a spherical distribution
+      const r = 2.5 + Math.random() * 1.5; // Radius
+      const theta = 2 * Math.PI * Math.random();
+      const phi = Math.acos(2 * Math.random() - 1);
+      
+      const x = r * Math.sin(phi) * Math.cos(theta);
+      const y = r * Math.sin(phi) * Math.sin(theta);
+      const z = r * Math.cos(phi);
 
-  // Adds a continuous slow rotation to the object
+      positions.set([x, y, z], i * 3);
+
+      // Mix of Agency Colors (White, Light Gray, subtle accent)
+      const mix = Math.random();
+      const color = new THREE.Color(mix > 0.8 ? '#ffffff' : mix > 0.4 ? '#888888' : '#333333');
+      colors.set([color.r, color.g, color.b], i * 3);
+    }
+    return [positions, colors];
+  }, []);
+
+  // Smooth, infinite rotation that doesn't break
   useFrame((state, delta) => {
-    meshRef.current.rotation.y += delta * 0.1; // Slightly slower, more elegant rotation
-    meshRef.current.rotation.x += delta * 0.05;
+    if (ref.current) {
+      ref.current.rotation.x -= delta / 10;
+      ref.current.rotation.y -= delta / 15;
+    }
   });
 
   return (
-    <Float speed={1.5} rotationIntensity={0.5} floatIntensity={1.5}>
-      {/* Increased scale slightly so it looks better as a full-screen background */}
-      <mesh ref={meshRef} scale={1.4}>
-        {/* The Shape: A complex, elegant twisted knot */}
-        <torusKnotGeometry args={[1, 0.35, 256, 64]} />
-        
-        {/* The Material: Upgraded Obsidian / Reflective Metal */}
-        <meshPhysicalMaterial 
-          color="#000000" // Pure black base for contrast
-          metalness={1} 
-          roughness={0.1} // Sharper reflections
-          clearcoat={1} 
-          clearcoatRoughness={0.1}
-          envMapIntensity={2} // Makes the environment light reflect stronger
+    <group rotation={[0, 0, Math.PI / 4]}>
+      <Points ref={ref} positions={positions} colors={colors} stride={3} frustumCulled={false} {...props}>
+        {/* Glowing Points Material */}
+        <PointMaterial
+          transparent
+          vertexColors
+          size={0.03}
+          sizeAttenuation={true}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
         />
-      </mesh>
-    </Float>
+      </Points>
+    </group>
   );
 }
 
 // 🛡️ THE CANVAS WRAPPER
 export default function Hero3D() {
   return (
-    // 🔥 UPGRADE: 'absolute inset-0 w-full h-full' makes it a perfect background layer
-    <div className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing">
+    <div className="absolute inset-0 w-full h-full">
       
-      {/* Subtle fallback glow behind the 3D canvas */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[30rem] h-[30rem] bg-white/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+      {/* Background Deep Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-white/5 blur-[150px] rounded-full -z-10 pointer-events-none"></div>
 
       <Canvas 
-        camera={{ position: [0, 0, 6], fov: 45 }} 
+        camera={{ position: [0, 0, 8], fov: 45 }} 
+        // Optimized for stability and performance on all devices
         dpr={[1, 1.5]} 
         gl={{ powerPreference: "high-performance", alpha: true, antialias: false }} 
         resize={{ scroll: false }} 
         className="w-full h-full z-10"
       >
-        {/* Enhanced Cinematic Lighting */}
-        <ambientLight intensity={0.2} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} color="#ffffff" />
-        <directionalLight position={[-10, -10, -5]} intensity={1.5} color="#4a4a4a" /> 
+        {/* The Starfield / Neural Cloud */}
+        <NeuralCloud />
         
-        {/* Interactive Wrapper */}
-        <PresentationControls 
-          global 
-          config={{ mass: 2, tension: 500 }} 
-          snap={{ mass: 4, tension: 1500 }} 
-          rotation={[0, 0.3, 0]} 
-          polar={[-Math.PI / 3, Math.PI / 3]} 
-          azimuth={[-Math.PI / 1.4, Math.PI / 2]}
-        >
-          <LiquidMetalKnot />
-          
-          {/* Increased sparkle spread and count for background scale */}
-          <Sparkles count={150} scale={8} size={1.5} speed={0.3} opacity={0.15} color="#ffffff" />
-        </PresentationControls>
-
-        {/* Realistic studio reflections */}
-        <Environment preset="city" />
+        {/* Replaced PresentationControls with OrbitControls for extreme stability */}
+        {/* It auto-rotates but allows the user to drag without glitching out */}
+        <OrbitControls 
+          enableZoom={false} 
+          enablePan={false} 
+          autoRotate 
+          autoRotateSpeed={0.5} 
+          maxPolarAngle={Math.PI / 1.5} 
+          minPolarAngle={Math.PI / 3} 
+        />
         
-        {/* Pushed shadow down slightly to match new scale */}
-        <ContactShadows position={[0, -2.5, 0]} opacity={0.5} scale={15} blur={2.5} far={4} />
+        {/* Subtle ground reflection to ground the scene */}
+        <ContactShadows position={[0, -3.5, 0]} opacity={0.3} scale={20} blur={3} far={5} />
+        
+        {/* Preload ensures the shaders compile immediately */}
+        <Preload all />
       </Canvas>
     </div>
   );
